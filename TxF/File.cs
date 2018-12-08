@@ -232,12 +232,22 @@ namespace TxF
         }
 
         /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public void Close()
+        {
+            apiwindows.CloseHandle(PointerToFile);
+        }
+
+        /// <summary>
         /// Write data into file
         /// </summary>
         /// <param name="file">Pointer to file</param>
         /// <param name="data">Stream data</param>
+        /// <param name="close">if set to <c>true</c> [close].</param>
         /// <returns></returns>
-        public static int WriteFile(File file, byte[] data)
+        /// <exception cref="Win32Exception"></exception>
+        public static int WriteFile(File file, byte[] data, bool close = true)
         {
             try
             {
@@ -255,9 +265,13 @@ namespace TxF
             }
             finally
             {
-                apiwindows.CloseHandle(file.PointerToFile);
+                if (close)
+                {
+                    file.Close();
+                }
             }            
         }
+
         /// <summary>
         /// Read data from file
         /// </summary>
