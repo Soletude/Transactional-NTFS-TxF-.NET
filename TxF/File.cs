@@ -240,6 +240,16 @@ namespace TxF
         }
 
         /// <summary>
+        /// Truncates this instance.
+        /// </summary>
+        public void Truncate()
+        {
+            long moved = 0;
+            apiwindows.SetFilePointer(PointerToFile, 0, ref moved, apiwindows.EMoveMethod.Begin);
+            apiwindows.SetEndOfFile(PointerToFile);
+        }
+
+        /// <summary>
         /// Write data into file
         /// </summary>
         /// <param name="file">Pointer to file</param>
@@ -281,6 +291,18 @@ namespace TxF
         {
             IntPtr f = _OpenFile(file);
             return _ReadFile(f);
+        }
+
+        /// <summary>
+        /// Reads the file.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="close">if set to <c>true</c> [close].</param>
+        /// <returns></returns>
+        /// <exception cref="Win32Exception"></exception>
+        public static byte[] ReadFile(File file, bool close = true)
+        {
+            return _ReadFile(file.PointerToFile, close);
         }
 
         /// <summary>
@@ -489,14 +511,14 @@ namespace TxF
         }
 
 
-        private static byte[] _ReadFile(IntPtr file)
+        private static byte[] _ReadFile(IntPtr file, bool close = true)
         {
             try
             {
                 int i = 0;
                 int sizeFile = _SizeFile(file);
                 byte[] result = new byte[sizeFile];
-                int err = apiwindows.ReadFile(file, result,  result.Length, ref  i, new apiwindows.LPOVERLAPPED());
+                int err = apiwindows.ReadFile(file, result,  result.Length, ref i, new apiwindows.LPOVERLAPPED());
                 if (err == 0)
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -509,7 +531,10 @@ namespace TxF
             }
             finally
             {
-                apiwindows.CloseHandle(file);
+                if (close)
+                {
+                    apiwindows.CloseHandle(file);
+                }
             }            
         }
 

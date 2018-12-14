@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace TxF.WindowsApi
 {
@@ -258,9 +259,24 @@ namespace TxF.WindowsApi
             System.IntPtr lpData,
             int dwFlags,
             System.IntPtr hTransaction);
-        
 
-        #endregion 
+
+        #endregion
+
+        #region Truncate
+        public enum EMoveMethod : uint
+        {
+            Begin = 0,
+            Current = 1,
+            End = 2
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetFilePointer(System.IntPtr hFile, long lDistanceToMove, ref long lpDistanceToMoveHigh, EMoveMethod dwMoveMethod);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetEndOfFile(IntPtr hFile);
+        #endregion
 
         public enum Style
         {
