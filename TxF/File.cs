@@ -254,10 +254,8 @@ namespace TxF
         /// </summary>
         /// <param name="file">Pointer to file</param>
         /// <param name="data">Stream data</param>
-        /// <param name="close">if set to <c>true</c> [close].</param>
         /// <returns></returns>
-        /// <exception cref="Win32Exception"></exception>
-        public static int WriteFile(File file, byte[] data, bool close = true)
+        public static int WriteFile(File file, byte[] data)
         {
             try
             {
@@ -275,11 +273,27 @@ namespace TxF
             }
             finally
             {
-                if (close)
-                {
-                    file.Close();
-                }
-            }            
+                apiwindows.CloseHandle(file.PointerToFile);
+            }
+        }
+
+        /// <summary>
+        /// Write data into file
+        /// </summary>
+        /// <param name="file">Pointer to file</param>
+        /// <param name="data">Stream data</param>
+        /// <param name="close">if set to <c>true</c> [close].</param>
+        /// <returns></returns>
+        /// <exception cref="Win32Exception"></exception>
+        public int Write(byte[] data)
+        {
+            int i = 0;
+            int err = apiwindows.WriteFile(PointerToFile, data, data.Length, ref i, new apiwindows.LPOVERLAPPED());
+            if (err == 0)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            return err;
         }
 
         /// <summary>
@@ -297,12 +311,30 @@ namespace TxF
         /// Reads the file.
         /// </summary>
         /// <param name="file">The file.</param>
-        /// <param name="close">if set to <c>true</c> [close].</param>
         /// <returns></returns>
         /// <exception cref="Win32Exception"></exception>
-        public static byte[] ReadFile(File file, bool close = true)
+        public static byte[] ReadFile(File file)
         {
-            return _ReadFile(file.PointerToFile, close);
+            return _ReadFile(file.PointerToFile);
+        }
+
+        /// <summary>
+        /// Reads the specified buffer.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        /// <exception cref="Win32Exception"></exception>
+        public byte[] Read(int count)
+        {
+            int i = 0;
+            byte[] buffer = new byte[count];
+            int err = apiwindows.ReadFile(PointerToFile, buffer, buffer.Length, ref i, new apiwindows.LPOVERLAPPED());
+            if (err == 0)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            Array.Resize(ref buffer, i);
+            return buffer;
         }
 
         /// <summary>
@@ -511,7 +543,7 @@ namespace TxF
         }
 
 
-        private static byte[] _ReadFile(IntPtr file, bool close = true)
+        private static byte[] _ReadFile(IntPtr file)
         {
             try
             {
@@ -531,10 +563,7 @@ namespace TxF
             }
             finally
             {
-                if (close)
-                {
-                    apiwindows.CloseHandle(file);
-                }
+                apiwindows.CloseHandle(file);
             }            
         }
 
