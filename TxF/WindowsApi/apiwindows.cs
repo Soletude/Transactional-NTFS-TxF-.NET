@@ -251,16 +251,23 @@ namespace TxF.WindowsApi
         [System.Runtime.InteropServices.DllImport("kernel32.dll",SetLastError = true,CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
         public extern static int DeleteFileTransactedW([System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)] string lpFileName,System.IntPtr hTransaction);
 
+        public enum MOVE_FLAGS
+        {
+            MOVEFILE_COPY_ALLOWED = 0x2,
+            MOVEFILE_CREATE_HARDLINK = 0x10,
+            MOVEFILE_DELAY_UNTIL_REBOOT = 0x4,
+            MOVEFILE_REPLACE_EXISTING = 0x1,
+            MOVEFILE_WRITE_THROUGH = 0x8,
+        }
+
         [System.Runtime.InteropServices.DllImport("kernel32.dll",SetLastError = true,CallingConvention = System.Runtime.InteropServices.CallingConvention.StdCall)]
         public extern static int MoveFileTransactedW(
             [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)] string lpExistingFileName,
             [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)] string lpNewFileName,
             LPPROGRESS_ROUTINE lpProgressRoutine,
             System.IntPtr lpData,
-            int dwFlags,
+            MOVE_FLAGS dwFlags,
             System.IntPtr hTransaction);
-
-
         #endregion
 
         #region Truncate

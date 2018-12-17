@@ -155,6 +155,41 @@ namespace TxF
             }
         }
 
+        /// <summary>
+        /// Move single file.
+        /// </summary>
+        /// <param name="sourceFileName">Source path file</param>
+        /// <param name="destFileName">Destination path file</param>
+        /// <param name="overwrite">If true, overwrite file if exists</param>
+        public static void Move(string sourceFileName, string destFileName, bool overwrite)
+        {
+            Transaction t = new Transaction(true);
+            Move(sourceFileName, destFileName, overwrite, t);
+        }
+
+        /// <summary>
+        /// Move single file.
+        /// </summary>
+        /// <param name="sourceFileName">Source path file</param>
+        /// <param name="destFileName">Destination path file</param>
+        /// <param name="overwrite">If true, overwrite file if exists</param>
+        /// <param name="transaction">Transaction active.</param>
+        public static void Move(string sourceFileName, string destFileName, bool overwrite, Transaction transaction)
+        {
+            int pbCancel = 0;
+            apiwindows.MOVE_FLAGS dwMoveFlags = apiwindows.MOVE_FLAGS.MOVEFILE_COPY_ALLOWED;
+            if (!overwrite)
+            {
+                dwMoveFlags = apiwindows.MOVE_FLAGS.MOVEFILE_REPLACE_EXISTING;
+            }
+            int err = apiwindows.MoveFileTransactedW(sourceFileName, destFileName, null, IntPtr.Zero, dwMoveFlags, transaction.TransactionHandle);
+
+            if (err == 0)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+        }
+
         public enum CreationDisposition
         {
             CreatesNewfileAlways = apiwindows.CreationDisposition.CREATE_ALWAYS,
