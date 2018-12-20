@@ -173,5 +173,14 @@ namespace TxF
                 //--
             }
         }
+
+        /// <summary>
+        /// Closes this instance.
+        /// </summary>
+        public void Close()
+        {
+            apiwindows.CloseHandle(PointerToDirectory);
+        }
+
     }
 }

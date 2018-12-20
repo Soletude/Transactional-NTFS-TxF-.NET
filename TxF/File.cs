@@ -178,7 +178,7 @@ namespace TxF
         {
             int pbCancel = 0;
             apiwindows.MOVE_FLAGS dwMoveFlags = apiwindows.MOVE_FLAGS.MOVEFILE_COPY_ALLOWED;
-            if (!overwrite)
+            if (overwrite)
             {
                 dwMoveFlags = apiwindows.MOVE_FLAGS.MOVEFILE_REPLACE_EXISTING;
             }
